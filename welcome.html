@@ -140,10 +140,8 @@
                 
                 function clock() {
                     let res = $("table tr[name='text-vc']");
-                    for (let i = 0; i < res.length; i++) {
-                        let code = $($("td", res[i])[0]).text();
-                        startFund(code);
-                    }
+                    let code = $($("td", res[0])[0]).text();
+                    startFund(code,res,0);
                 }
                 
                 function sumFund() {
@@ -170,11 +168,15 @@
                     
                 }
                 
-                function startFund(code) {
+                function startFund(code,res,i) {
+                    if (i===res.length) {
+                        return ;
+                    }
                     $.ajax({
                         type: 'GET',
                         dataType: 'JSONP',
-                        url: url + code + '.js?rt=' + Math.round(new Date()),
+                        url: url + code + '.js',
+                        data: {rt:Math.round(new Date())},
                         jsonpCallback: 'jsonpgz',
                         success: function (data) {
                             let newCode = data.fundcode
@@ -199,9 +201,13 @@
                                 let v = x * cyfe;
                                 $($tdDom[7]).text(v.toFixed(4));
                             }
+                            i = i + 1;
+                            startFund($($("td", res[i])[0]).text(),res,i)
                         },
                         error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        
+                            console.log(XMLHttpRequest.status);
+                            console.log(XMLHttpRequest.readyState);
+                            console.log(textStatus);
                         }
                     });
                 }
