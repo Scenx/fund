@@ -156,9 +156,9 @@
                     for (let i = 0; i < tdSum.length; i++) {
                         ones += parseFloat($(tdSum[i]).text());
                     }
-                    let hongt = ones.toFixed(4);
+                    let hongt ="预估总收益 "+ ones.toFixed(4);
                     let hongc = "btn btn-danger radius"
-                    let lvt = ones.toFixed(4);
+                    let lvt ="预估总收益 "+ ones.toFixed(4);
                     let lvc = "btn btn-success radius"
                     if (ones > 0) {
                         res.attr("class", hongc);
