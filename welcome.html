@@ -33,7 +33,7 @@
                 </button>
             </div>
             <div class="cl pd-5 bg-1 bk-gray mt-20"><span class="l"><a href="javascript:;" class="btn btn-danger radius"
-                                                                       id="sumFunds">预估总收益</a></span></div>
+                                                                       id="sumFunds">今日估算总收益</a></span></div>
             <div class="mt-20">
                 <table class="table table-border table-bordered table-hover table-bg table-sort">
                     <thead>
@@ -154,9 +154,9 @@
                     for (let i = 0; i < tdSum.length; i++) {
                         ones += parseFloat($(tdSum[i]).text());
                     }
-                    let hongt ="预估总收益 "+ ones.toFixed(4);
+                    let hongt ="今日估算总收益 "+ ones.toFixed(4);
                     let hongc = "btn btn-danger radius"
-                    let lvt ="预估总收益 "+ ones.toFixed(4);
+                    let lvt ="今日估算总收益 "+ ones.toFixed(4);
                     let lvc = "btn btn-success radius"
                     if (ones > 0) {
                         res.attr("class", hongc);
