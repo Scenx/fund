@@ -176,7 +176,7 @@
                         type: 'GET',
                         dataType: 'JSONP',
                         url: url + code + '.js',
-                        data: {rt:Math.round(new Date())},
+                        // data: {rt:Math.round(new Date())},
                         jsonpCallback: 'jsonpgz',
                         success: function (data) {
                             let newCode = data.fundcode
