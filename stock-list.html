@@ -1,0 +1,202 @@
+﻿<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="renderer" content="webkit|ie-comp|ie-stand">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport"
+              content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+        <meta http-equiv="Cache-Control" content="no-siteapp"/>
+        <!--[if lt IE 9]>
+        <script type="text/javascript" src="lib/html5shiv.js"></script>
+        <script type="text/javascript" src="lib/respond.min.js"></script>
+        <![endif]-->
+        <link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css"/>
+        <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css"/>
+        <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css"/>
+        <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin"/>
+        <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css"/>
+        <!--[if IE 6]>
+        <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+        <script>DD_belatedPNG.fix('*');</script>
+        <![endif]-->
+        <title>股票【每秒自动刷新数据】</title>
+    </head>
+    <body>
+        <div class="page-container">
+            <div class="text-c">
+                <input type="text" class="input-text" style="width:900px" placeholder="输入股票编码，英文逗号隔开 如sz300896,sh603288,sz300347,sh603605,sz000661,sh600763,sh601888,sh601100,sz300529,sz000333,sh601318,sz002821,sz002511,sz002475,sh600660,sh603027,sz000002,sz002557,sz002607,sz300999,sh600036,sh603882,sh600887,sh600436,sz300760,sh600276,sz300015,sz000568,sz000858,sh600519,sz300750,sh601012" id="stockCodeList"
+                       name="stockCodeList">
+                <button onclick="stockCodeListSubmit()" type="submit" class="btn btn-danger radius"
+                        id="stockCodeListSubmit" name="stockCodeListSubmit"><i class="Hui-iconfont">&#xe630;
+                </i> 提交
+                </button>
+            </div>
+        <!--    <div class="cl pd-5 bg-1 bk-gray mt-20"><span class="l"><a href="javascript:;" class="btn btn-danger radius"
+                                                                       id="sumFunds">今日估算总收益</a></span></div>-->
+            <div class="mt-20">
+                <table class="table table-border table-bordered table-hover table-bg table-sort">
+                    <thead>
+                        <tr class="text-c">
+                            <th>编码</th>
+                            <th>股票名称</th>
+                            <th>当前价</th>
+                            <th>涨跌</th>
+                            <th>涨跌幅</th>
+                            <th>最高价</th>
+                            <th>最低价</th>
+                            <th>更新时间</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--_footer 作为公共模版分离出去-->
+        <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+        <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+        <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
+        <!--请在下方写此页面业务相关的脚本-->
+        <script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+        <script type="text/javascript" src="lib/datatables/1.10.15/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="lib/laypage/1.2/laypage.js"></script>
+        <script type="text/javascript">
+            $(function () {
+                /*$('.table-sort').dataTable({
+                    "aaSorting": [[3, "desc"]],//默认第几个排序
+                    "bStateSave": false,//状态保存
+                });*/
+                $("#DataTables_Table_0_filter").hide();
+                $("#DataTables_Table_0_info").hide();
+                $("#stockCodeList").val($.cookie("stockCodeList"));
+                stockCodeListSubmit();
+            });
+            
+            const url = "http://qt.gtimg.cn/q=";
+            
+            function stockCodeListSubmit() {
+                let codes = $("#stockCodeList").val();
+                let codeArr = codes.split(",");
+                let b = $("#stockBody");
+                b.empty();
+                for (let i = 0; i < codeArr.length; i++) {
+                    let data = {};
+                    data.code = codeArr[i];
+                    data.name = "--";
+                    data.now = "--";
+                    data.change = "--";
+                    data.changePercent = "--";
+                    data.time = "--";
+                    data.max = "--";
+                    data.min = "--";
+                    b.append(getStockTable(data));
+                    cSetCookie("stockCodeList", codes);
+                }}
+            
+            function getStockTable(data) {
+                let h = "<tr class=\"text-c\" name=\"text-vc\" id=\"stockcode" +
+                    data.code +
+                    "\">\n" +
+                    "                            <td>" +
+                    data.code +
+                    "</td>\n" +
+                    "                            <td>" +
+                    data.name +
+                    "</td>\n" +
+                    "                            <td>" +
+                    data.now +
+                    "</td>\n" +
+                    "                            <td>" +
+                    data.change +
+                    "</td>\n" +
+                    "                            <td>" +
+                    data.changePercent +
+                    "</td>\n" +
+                    "                            <td>" +
+                    data.max +
+                    "</td>\n" +
+                    "                            <td>" +
+                    data.min +
+                    "                            <td >" +
+                    data.time +
+                    "</td>\n" +
+                    "                        </tr>";
+                return h;
+            }
+            
+            function stockClock() {
+                let res = $("table tr[name='text-vc']");
+                let code = $("#stockCodeList").val();
+                startStock(code,res);
+            }
+
+            function parseStockData(data) {
+                let newData = [];
+                let lines = data.split("\n");
+                for (let i = 0; i <lines.length; i++) {
+                    let line = lines[i];
+                    let code = line.substring(line.indexOf("_") + 1, line.indexOf("="));
+                    let dataStr=line.substring(line.indexOf("=")+2,line.length-2);
+                    let values = dataStr.split("~");
+                    let res={};
+                    res.code = code;
+                    res.name = values[1];
+                    res.now = values[3];
+                    res.change = values[31];
+                    res.changePercent = values[32];
+                    res.time = values[30];
+                    res.max = values[33];
+                    res.min = values[34];
+                    newData.push(res);
+                }
+                
+                return newData;
+            }
+            
+            
+            function startStock(code,res) {
+                $.ajax({
+                    type: 'GET',
+                    url: url+code,
+                    success: function (data) {
+                        let newDatas = parseStockData(data);
+                        for (let i = 0; i < newDatas.length; i++) {
+                            let newData=newDatas[i];
+                            let newCode = newData.code
+                            let newCodeDom = $("#stockcode" + newCode)
+                            let $tdDom = $("td", newCodeDom);
+                            $($tdDom[1]).text(newData.name);
+                            $($tdDom[2]).text(newData.now);
+                            let change = newData.change;
+                            $($tdDom[3]).text(change);
+                            if (parseFloat(change) > 0) {
+                                $($tdDom[3]).attr("style", "color: red;");
+                                $($tdDom[4]).attr("style", "color: red;");
+                            } else {
+                                $($tdDom[3]).attr("style", "color: green;");
+                                $($tdDom[4]).attr("style", "color: green;");
+                            }
+                            $($tdDom[4]).text(newData.changePercent+"%");
+                            $($tdDom[5]).text(newData.max);
+                            $($tdDom[6]).text(newData.min);
+                            $($tdDom[7]).text(newData.time);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        console.log(XMLHttpRequest.status);
+                        console.log(XMLHttpRequest.readyState);
+                        console.log(textStatus);
+                    }
+                });
+            }
+            
+            function cSetCookie(key, value) {
+                $.cookie(key, value, {expires: 99 * 365});
+            }
+            
+            setInterval("stockClock()", 1000);
+        </script>
+    </body>
+</html>

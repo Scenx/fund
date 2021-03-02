@@ -1,0 +1,182 @@
+﻿<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="renderer" content="webkit|ie-comp|ie-stand">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport"
+              content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+        <meta http-equiv="Cache-Control" content="no-siteapp"/>
+        <!--[if lt IE 9]>
+        <script type="text/javascript" src="lib/html5shiv.js"></script>
+        <script type="text/javascript" src="lib/respond.min.js"></script>
+        <![endif]-->
+        <link rel="stylesheet" type="text/css" href="static/h-ui/css/H-ui.min.css"/>
+        <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/H-ui.admin.css"/>
+        <link rel="stylesheet" type="text/css" href="lib/Hui-iconfont/1.0.8/iconfont.css"/>
+        <link rel="stylesheet" type="text/css" href="static/h-ui.admin/skin/default/skin.css" id="skin"/>
+        <link rel="stylesheet" type="text/css" href="static/h-ui.admin/css/style.css"/>
+        <!--[if IE 6]>
+        <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+        <script>DD_belatedPNG.fix('*');</script>
+        <![endif]-->
+        <title>虚拟货币【每秒自动刷新数据】</title>
+    </head>
+    <body>
+        <div class="page-container">
+            <div class="text-c">
+                <input type="text" class="input-text" style="width:900px" placeholder="输入虚拟货币编码，英文逗号隔开 如btc_btcbtcusd,btc_btcethusd" id="coinCodeList"
+                       name="coinCodeList">
+                <button onclick="coinCodeListSubmit()" type="submit" class="btn btn-danger radius"
+                        id="coinCodeListSubmit" name="coinCodeListSubmit"><i class="Hui-iconfont">&#xe630;
+                </i> 提交
+                </button>
+            </div>
+            <div class="cl pd-5 bg-1 bk-gray mt-20"><span class="l"><a href="javascript:;" class="btn btn-danger radius"
+                                                                       id="sumFunds" onclick="tips()">虚拟货币编码格式提示💡</a></span></div>
+            <div class="mt-20">
+                <table class="table table-border table-bordered table-hover table-bg table-sort">
+                    <thead>
+                        <tr class="text-c">
+                            <th>编码</th>
+                            <th>名称</th>
+                            <th>当前价</th>
+                            <th>更新时间</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coinBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content radius">
+                    <div class="modal-header">
+                        <h3 class="modal-title">虚拟货币编码格式提示</h3>
+                        <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+                    </div>
+                    <div class="modal-body">
+                        <p>加密货币行情采用新浪的接口，编码格式如下:</p>
+                        <p>例:比特币货币的编码为btc_btcbtcusd,【btc_btc】【加密货币代码】【usd】</p>
+                        <p>支持的货币和代码在这里 <a target="_blank" href="https://finance.sina.com.cn/blockchain/hq.shtml">[https://finance.sina.com.cn/blockchain/hq.shtml]</a></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--_footer 作为公共模版分离出去-->
+        <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+        <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+        <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
+        <!--请在下方写此页面业务相关的脚本-->
+        <script type="text/javascript" src="lib/My97DatePicker/4.8/WdatePicker.js"></script>
+        <script type="text/javascript" src="lib/datatables/1.10.15/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="lib/laypage/1.2/laypage.js"></script>
+        <script type="text/javascript">
+            $(function () {
+                /*$('.table-sort').dataTable({
+                    "aaSorting": [[3, "desc"]],//默认第几个排序
+                    "bStateSave": false,//状态保存
+                });*/
+                $("#DataTables_Table_0_filter").hide();
+                $("#DataTables_Table_0_info").hide();
+                $("#coinCodeList").val($.cookie("coinCodeList"));
+                coinCodeListSubmit();
+            });
+            
+            const url = "http://hq.sinajs.cn/?_=&list=";
+            
+            function coinCodeListSubmit() {
+                let codes = $("#coinCodeList").val();
+                let codeArr = codes.split(",");
+                let b = $("#coinBody");
+                b.empty();
+                for (let i = 0; i < codeArr.length; i++) {
+                    let data = {};
+                    data.code = codeArr[i];
+                    data.name = "--";
+                    data.timeStamp = "--";
+                    data.price = "--";
+                    b.append(getCoinTable(data));
+                    cSetCookie("coinCodeList", codes);
+                }}
+            
+            function getCoinTable(data) {
+                let h = "<tr class=\"text-c\" name=\"text-vc\" id=\"coincode" +
+                    data.code +
+                    "\">\n" +
+                    "                            <td>" +
+                    data.code +
+                    "</td>\n" +
+                    "                            <td>" +
+                    data.name +
+                    "</td>\n" +
+                    "                            <td style='color: red;'>" +
+                    data.price +
+                    "</td>\n" +
+                    "                            <td>" +
+                    data.timeStamp +
+                    "</td>\n" +
+                    "                        </tr>";
+                return h;
+            }
+            
+            function coinClock() {
+                let res = $("table tr[name='text-vc']");
+                let code = $("#coinCodeList").val();
+                startCoin(code,res);
+            }
+
+            function parseCoinData(data,newCode) {
+                let res = {};
+                let split = data.split(",");
+                res.code = newCode;
+                res.name = split[9];
+                res.timeStamp =split[11]+" "+split[0];
+                res.price = split[8];
+                return res;
+            }
+            
+            function startCoin(code,res) {
+                $.ajax({
+                    url: url + code,
+                    // data: {rt:Math.round(new Date())},
+                    dataType: 'SCRIPT',
+                    success: function (data) {
+                        let codes = code.split(",");
+                        for (let i = 0; i < codes.length; i++) {
+                            let newCode = codes[i];
+                            let resData = window['hq_str_'+newCode];
+                            let newData = parseCoinData(resData,newCode);
+                            let newCodeDom = $("#coincode" + newCode);
+                            let $tdDom = $("td", newCodeDom);
+                            $($tdDom[1]).text(newData.name);
+                            $($tdDom[2]).text(newData.price);
+                            $($tdDom[3]).text(newData.timeStamp);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        console.log(XMLHttpRequest.status);
+                        console.log(XMLHttpRequest.readyState);
+                        console.log(textStatus);
+                    }
+                });
+    
+            }
+            
+            function cSetCookie(key, value) {
+                $.cookie(key, value, {expires: 99 * 365});
+            }
+
+            function tips() {
+                $("#modal-demo").modal("show");
+            }
+            
+            setInterval("coinClock()", 1000);
+        </script>
+    </body>
+</html>
