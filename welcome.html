@@ -178,6 +178,7 @@
                         url: url + code + '.js',
                         // data: {rt:Math.round(new Date())},
                         jsonpCallback: 'jsonpgz',
+                        async: false,
                         success: function (data) {
                             let newCode = data.fundcode
                             let newCodeDom = $("#fundcode" + newCode)

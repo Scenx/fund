@@ -146,6 +146,7 @@
                     url: url + code,
                     // data: {rt:Math.round(new Date())},
                     dataType: 'SCRIPT',
+                    async: false,
                     success: function (data) {
                         let codes = code.split(",");
                         for (let i = 0; i < codes.length; i++) {

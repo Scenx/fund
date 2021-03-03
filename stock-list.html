@@ -160,6 +160,7 @@
                 $.ajax({
                     type: 'GET',
                     url: url+code,
+                    async: false,
                     success: function (data) {
                         let newDatas = parseStockData(data);
                         for (let i = 0; i < newDatas.length; i++) {
