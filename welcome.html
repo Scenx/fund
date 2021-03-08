@@ -186,7 +186,6 @@
                             $($tdDom[1]).text(data.name);
                             $($tdDom[2]).text(data.gsz);
                             let gszzl = data.gszzl;
-                            $($tdDom[3]).text(gszzl);
                             if (parseFloat(gszzl) > 0) {
                                 $($tdDom[3]).attr("style", "color: red;");
                                 $($tdDom[7]).attr("style", "color: red;");
@@ -194,6 +193,7 @@
                                 $($tdDom[3]).attr("style", "color: green;");
                                 $($tdDom[7]).attr("style", "color: green;");
                             }
+                            $($tdDom[3]).text(gszzl+"%");
                             $($tdDom[4]).text(data.gztime);
                             let x = data.gsz - data.dwjz;
                             let cyfe = $("input", $($tdDom[6])).val();
