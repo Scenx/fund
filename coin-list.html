@@ -25,7 +25,7 @@
     <body>
         <div class="page-container">
             <div class="text-c">
-                <input type="text" class="input-text" style="width:900px" placeholder="输入虚拟货币编码，英文逗号隔开 如btc_btcbtcusd,btc_btcethusd" id="coinCodeList"
+                <input type="text" class="input-text" style="width:900px" placeholder="输入虚拟货币编码，英文逗号隔开 如BTC-USD,DOGE-USD" id="coinCodeList"
                        name="coinCodeList">
                 <button onclick="coinCodeListSubmit()" type="submit" class="btn btn-danger radius"
                         id="coinCodeListSubmit" name="coinCodeListSubmit"><i class="Hui-iconfont">&#xe630;
@@ -57,9 +57,8 @@
                         <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
                     </div>
                     <div class="modal-body">
-                        <p>加密货币行情采用新浪的接口，编码格式如下:</p>
-                        <p>例:比特币货币的编码为btc_btcbtcusd,【btc_btc】【加密货币代码】【usd】</p>
-                        <p>支持的货币和代码在这里 <a target="_blank" href="https://finance.sina.com.cn/blockchain/hq.shtml">[https://finance.sina.com.cn/blockchain/hq.shtml]</a></p>
+                        <p>加密货币行情采用coinbase的接口，编码格式参见coinbase:</p>
+                        <p>例:比特币货币的编码为BTC-USD，狗狗币的编码为DOGE-USD</p>
                     </div>
                     <div class="modal-footer">
                         <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
@@ -142,32 +141,35 @@
             }
             
             function startCoin(code,res) {
-                $.ajax({
-                    url: url + code,
-                    // data: {rt:Math.round(new Date())},
-                    dataType: 'SCRIPT',
-                    async: false,
-                    success: function (data) {
-                        let codes = code.split(",");
-                        for (let i = 0; i < codes.length; i++) {
-                            let newCode = codes[i];
-                            let resData = window['hq_str_'+newCode];
-                            let newData = parseCoinData(resData,newCode);
+                let codes = code.split(",");
+                for (let i = 0; i < codes.length; i++) {
+                    let newCode = codes[i];
+                    let apiURL = "https://api.coinbase.com/v2/prices/" + newCode + "/spot";
+                    $.ajax({
+                        url: apiURL,
+                        async: true,
+                        success: function (data) {
+                            let newData = {};
+                            newData.code = newCode;
+                            newData.name = data.data.base;
+                            newData.price = data.data.amount+"$";
+                            // 下面的时间戳需要替换为API返回的时间（如果有的话）
+                            newData.timeStamp = formatDateTime(new Date());
                             let newCodeDom = $("#coincode" + newCode);
                             let $tdDom = $("td", newCodeDom);
                             $($tdDom[1]).text(newData.name);
                             $($tdDom[2]).text(newData.price);
                             $($tdDom[3]).text(newData.timeStamp);
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            console.log(XMLHttpRequest.status);
+                            console.log(XMLHttpRequest.readyState);
+                            console.log(textStatus);
                         }
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        console.log(XMLHttpRequest.status);
-                        console.log(XMLHttpRequest.readyState);
-                        console.log(textStatus);
-                    }
-                });
-    
+                    });
+                }
             }
+            
             
             function cSetCookie(key, value) {
                 $.cookie(key, value, {expires: 99 * 365});
@@ -176,6 +178,26 @@
             function tips() {
                 $("#modal-demo").modal("show");
             }
+            
+            function formatDateTime(date) {
+                let year = date.getFullYear();
+                let month = padNumber(date.getMonth() + 1); // JS months start at 0
+                let day = padNumber(date.getDate());
+                let hour = padNumber(date.getHours());
+                let minute = padNumber(date.getMinutes());
+                let second = padNumber(date.getSeconds());
+                
+                return year + month + day + hour + minute + second;
+            }
+            
+            function padNumber(number) {
+                if (number < 10) {
+                    return '0' + number;
+                } else {
+                    return '' + number;
+                }
+            }
+            
             
             setInterval("coinClock()", 1000);
         </script>
